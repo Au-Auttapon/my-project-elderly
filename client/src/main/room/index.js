@@ -6,13 +6,15 @@ import Badges from '../../component/badge';
 
 export default function RoomPage () {
 
-  const [roomDatas, setRoomDatas]= useState();
+  const [roomDatas, setRoomDatas]= useState([]);
+  const [roomCount, setRoomCount]= useState();
 
   useEffect(()=>{
     const fetchData = async () => {
       try {
           const data = await Room.get(); // Await the response
           setRoomDatas(data)
+          setRoomCount(data.length)
       } catch (error) {
           console.error("Failed to fetch data", error);
       }
@@ -20,7 +22,7 @@ export default function RoomPage () {
   
   fetchData();
   },[])
-
+// console.log('roomDatas.length',roomDatas.length)
   const headers = [
     { title: '#', key: 'roomId', fr: 1},
     { title: 'ประเภทห้อง', key: 'roomType', fr: 2 },
@@ -30,7 +32,7 @@ export default function RoomPage () {
 
   return (
     <div style={{marginTop: '20px'}}>
-      <Badges title='ห้องพัก'count={roomDatas.length}/>
+      <Badges title='ห้องพัก' count={roomCount}/>
       <SearchRoom/>
       <DataTable headers={headers} data={roomDatas} />
     </div>
