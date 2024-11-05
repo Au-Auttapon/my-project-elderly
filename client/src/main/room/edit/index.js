@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   Card,
@@ -18,7 +18,8 @@ import { useNavigate } from "react-router-dom";
 import CancelModal from "../../../component/modal-cancel";
 import { enqueueSnackbar } from "notistack";
 import Room from "../../../api/room/Room";
-export default function CreateRoom() {
+export default function EditRoom({ roomId }) {
+  const [roomData, setRoomData] = useState({});
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
       roomId: "",
@@ -32,6 +33,7 @@ export default function CreateRoom() {
     },
   });
   const navigate = useNavigate();
+  console.log("roomData", roomData);
 
   // สร้าง style สำหรับ input type number ไม่ให่มี arrow
   const stylesCSS = {
@@ -53,6 +55,22 @@ export default function CreateRoom() {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isCancelOpen, setIsCancelOpen] = useState(false);
 
+  useEffect(() => {
+    if (roomId) {
+      const fetchData = async () => {
+        try {
+          const data = await Room.getById(roomId);
+          setRoomData(data);
+        } catch (error) {
+          console.error("Failed to fetch room data:", error);
+          // Optionally, notify the user about the error
+          // showSnackbar("Failed to fetch room data");
+        }
+      };
+      fetchData();
+    }
+  }, [roomId]);
+
   const onSubmit = (data) => {
     setNewRoomData(data);
     setIsConfirmOpen(true);
@@ -64,7 +82,7 @@ export default function CreateRoom() {
     setIsConfirmOpen(false);
     enqueueSnackbar("ทำรายการสำเร็จ", {
       variant: "success",
-      autoHideDuration: 5000,
+      autoHideDuration: 4000,
     });
     navigate("/house/room");
   };

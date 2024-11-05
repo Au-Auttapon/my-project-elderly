@@ -1,16 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../../db"); // สมมติว่าคุณเก็บการเชื่อมต่อ db ในไฟล์ db.js
+const db = require("../../db");
 
 router.get("/", (req, res) => {
-  const roomId = req.query.roomId; // ใช้ req.query แทน req.body
+  const roomId = req.query.roomId;
 
   let query = "SELECT * FROM rooms";
   let queryParams = [];
 
   if (roomId) {
     query += " WHERE roomId LIKE ?";
-    queryParams.push(`%${roomId}%`); // ใช้ % เพื่อทำการค้นหาแบบ wildcard
+    queryParams.push(`%${roomId}%`);
   }
 
   query += " GROUP BY roomId ORDER BY roomId DESC";
@@ -24,13 +24,31 @@ router.get("/", (req, res) => {
   });
 });
 
+router.get("/edit/:id", (req, res) => {
+  const roomId = req.params.id;
+  db.query(
+    "SELECT * FROM rooms WHERE roomId = ?",
+    [roomId],
+    (error, results) => {
+      if (error) {
+        console.error("Database query error:", error);
+        return res.status(500).json({ error: "Database error" });
+      }
+      if (results.length === 0) {
+        return res.status(404).json({ error: "Room not found" });
+      }
+      res.send(results[0]);
+    }
+  );
+});
+
 router.post("/create", (req, res) => {
   const roomId = req.body.roomId;
   const roomType = req.body.roomType;
   const roomGender = req.body.roomGender;
   const roomPrice = req.body.roomPrice;
   const bedQuantity = req.body.bedQuantity;
-  let bedId = req.body.bedId; // ใช้ let แทน const เพื่อให้สามารถปรับค่าของ bedId ได้
+  let bedId = req.body.bedId;
   const bedStatus = req.body.bedStatus;
   const roomStatus = req.body.roomStatus;
 
@@ -51,19 +69,19 @@ router.post("/create", (req, res) => {
         (err, result) => {
           if (err) {
             console.log(err);
-            return res.status(500).send("Error inserting room"); // ส่งคำตอบกลับในกรณีเกิดข้อผิดพลาด
+            return res.status(500).send("Error inserting room");
           } else {
-            bedId++; // เพิ่ม bedId
-            CreateRoom(); // เรียกฟังก์ชันใหม่เพื่อแทรกห้องถัดไป
+            bedId++;
+            CreateRoom();
           }
         }
       );
     } else {
-      res.send("Room inserted"); // ส่งคำตอบเมื่อเสร็จสิ้นการแทรก
+      res.send("Room inserted");
     }
   };
 
-  CreateRoom(); // เรียกฟังก์ชันเพื่อเริ่มการแทรกข้อมูล
+  CreateRoom();
 });
 
 module.exports = router;

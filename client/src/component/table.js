@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from "react";
+import PropTypes from "prop-types";
 import {
   Table,
   TableBody,
@@ -10,16 +10,18 @@ import {
   Paper,
   TablePagination,
   Menu,
-  MenuItem,
   IconButton,
-} from '@mui/material';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+} from "@mui/material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import RoomMenu from "../moreselect/room";
+import ElderlyMenu from "../moreselect/elderly";
 
-const DataTable = ({ headers, data = [], fontStyle }) => {
+const DataTable = ({ headers, data = [], fontStyle, renderMenu }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [anchorEl, setAnchorEl] = useState(null);
   const [currentRow, setCurrentRow] = useState(null);
+  let totalFr = 0; // Declare and initialize
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -31,7 +33,6 @@ const DataTable = ({ headers, data = [], fontStyle }) => {
   };
 
   const handleMenuClick = (event, row) => {
-    console.log('event.currentTarget',event.currentTarget)
     setAnchorEl(event.currentTarget);
     setCurrentRow(row);
   };
@@ -41,20 +42,10 @@ const DataTable = ({ headers, data = [], fontStyle }) => {
     setCurrentRow(null);
   };
 
-  const handleEdit = () => {
-    // Handle edit action here
-    console.log('Editing:', currentRow);
-    handleMenuClose();
-  };
-
-  const handleDelete = () => {
-    // Handle delete action here
-    console.log('Deleting:', currentRow);
-    handleMenuClose();
-  };
-
-  const paginatedData = data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-  const totalFr = headers.reduce((acc, header) => acc + (header.fr || 1), 0);
+  const paginatedData = data.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
 
   return (
     <Paper>
@@ -66,11 +57,11 @@ const DataTable = ({ headers, data = [], fontStyle }) => {
                 <TableCell
                   key={index}
                   style={{
-                    width: `${(header.fr || 1) / totalFr * 100}%`,
+                    width: `${((header.fr || 1) / totalFr) * 100}%`,
                     ...fontStyle,
-                    fontWeight: 'bold',
+                    fontWeight: "bold",
                   }}
-                  align={header.align || 'center'}
+                  align={header.align || "center"}
                 >
                   {header.title}
                 </TableCell>
@@ -82,12 +73,20 @@ const DataTable = ({ headers, data = [], fontStyle }) => {
             {paginatedData.map((row, rowIndex) => (
               <TableRow key={rowIndex}>
                 {headers.map((header, cellIndex) => (
-                  <TableCell key={cellIndex} align={header.align || 'center'} style={fontStyle}>
+                  <TableCell
+                    key={cellIndex}
+                    align={header.align || "center"}
+                    style={fontStyle}
+                  >
                     {row[header.key]}
                   </TableCell>
                 ))}
                 <TableCell align="center">
-                  <IconButton onClick={(event) => {handleMenuClick(event, row)}}>
+                  <IconButton
+                    onClick={(event) => {
+                      handleMenuClick(event, row);
+                    }}
+                  >
                     <MoreVertIcon />
                   </IconButton>
                 </TableCell>
@@ -105,20 +104,21 @@ const DataTable = ({ headers, data = [], fontStyle }) => {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose} 
-      PaperProps={{
-        style: {
-          width: '90px',
-        },
-      }}
-      anchorOrigin={{
-        vertical: 'bottom', // เริ่มจากด้านล่าง
-        horizontal: 'left', // ขยับไปทางด้านขวาของ anchor
-      }}
-        >
-
-        <MenuItem onClick={handleEdit}>แก้ไข</MenuItem>
-        <MenuItem onClick={handleDelete}>ลบ</MenuItem>
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        PaperProps={{
+          style: {
+            width: "90px",
+          },
+        }}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+      >
+        {currentRow && renderMenu(currentRow, handleMenuClose)}
       </Menu>
     </Paper>
   );
@@ -128,6 +128,25 @@ DataTable.propTypes = {
   headers: PropTypes.array.isRequired,
   data: PropTypes.array,
   fontStyle: PropTypes.object,
+  renderMenu: PropTypes.func.isRequired,
+};
+
+DataTable.Room = (props) => {
+  return (
+    <DataTable
+      {...props}
+      renderMenu={(row, onClose) => <RoomMenu row={row} onClose={onClose} />}
+    />
+  );
+};
+
+DataTable.Elderly = (props) => {
+  return (
+    <DataTable
+      {...props}
+      renderMenu={(row, onClose) => <ElderlyMenu row={row} onClose={onClose} />}
+    />
+  );
 };
 
 export default DataTable;

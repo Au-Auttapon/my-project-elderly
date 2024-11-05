@@ -22,7 +22,6 @@ export default function RoomPage() {
           ...room,
           roomStatus: room.roomStatus === 1 ? "ว่าง" : "เต็ม",
         }));
-        console.log("formattedData", formattedData);
         setRoomDatas(formattedData);
         setRoomCount(formattedData.length);
       } catch (error) {
@@ -32,7 +31,7 @@ export default function RoomPage() {
 
     fetchData();
   }, [searchData]);
-  console.log("searchData", searchData);
+
   const handleClickCreate = () => {
     navigate("/house/room/create");
   };
@@ -68,7 +67,7 @@ export default function RoomPage() {
         </div>
       </div>
       <SearchRoom setSearchData={setSearchData} />
-      <DataTable headers={headers} data={roomDatas} />
+      <DataTable.Room headers={headers} data={roomDatas} />
     </>
   );
 }

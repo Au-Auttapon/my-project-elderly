@@ -9,11 +9,23 @@ const Room = {
       const urlWithParams = roomId
         ? `${url}/rooms?roomId=${roomId}`
         : `${url}/rooms`;
-      const res = await Axios.get(urlWithParams); // Use await to get the response
-      return res.data; // Return the data
+      const res = await Axios.get(urlWithParams);
+      return res.data;
     } catch (error) {
-      console.error(error); // Log the error
-      throw error; // Rethrow the error if you want to handle it later
+      console.error(error);
+      throw error;
+    }
+  },
+  getById: async (roomId = null) => {
+    try {
+      const urlWithParams = roomId
+        ? `${url}/rooms/edit/${roomId}`
+        : `${url}/rooms`;
+      const res = await Axios.get(urlWithParams);
+      return res.data;
+    } catch (error) {
+      console.error("Error fetching room data:", error);
+      throw error;
     }
   },
 
