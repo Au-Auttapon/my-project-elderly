@@ -24,6 +24,7 @@ export default function CancelModal({
           width: 400, // Set the width to 500px
         },
       }}
+      aria-hidden={open ? "false" : "true"}
     >
       <DialogTitle style={{ display: "flex", gap: 10 }}>
         <CancelIcon color="error" style={{ marginTop: 2 }} />

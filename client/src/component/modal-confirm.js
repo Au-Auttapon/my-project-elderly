@@ -25,6 +25,7 @@ export default function ConfirmModal({
           width: 400, // Set the width to 500px
         },
       }}
+      aria-hidden={open ? "false" : "true"}
     >
       <DialogTitle style={{ display: "flex", gap: 10 }}>
         <CheckCircleIcon color="primary" style={{ marginTop: 2 }} />

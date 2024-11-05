@@ -16,7 +16,8 @@ import {
 import ConfirmModal from "../../../component/modal-confirm";
 import { useNavigate } from "react-router-dom";
 import CancelModal from "../../../component/modal-cancel";
-
+import { enqueueSnackbar } from "notistack";
+import Room from "../../../api/room/Room";
 export default function CreateRoom() {
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
@@ -25,6 +26,7 @@ export default function CreateRoom() {
       roomGender: "",
       roomPrice: "",
       bedQuantity: "",
+      bedId: 1,
       bedStatus: true,
       roomStatus: true,
     },
@@ -47,20 +49,24 @@ export default function CreateRoom() {
       },
     },
   };
-
+  const [newRoomData, setNewRoomData] = useState({});
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isCancelOpen, setIsCancelOpen] = useState(false);
 
   const onSubmit = (data) => {
-    // Open the confirmation dialog
+    setNewRoomData(data);
     setIsConfirmOpen(true);
   };
 
   const handleConfirm = () => {
-    // Handle the confirmation logic here (e.g., saving data)
-    console.log("Data saved");
-    reset(); // Reset form after submission
+    Room.create(newRoomData);
+    reset();
     setIsConfirmOpen(false); // Close the dialog
+    enqueueSnackbar("ทำรายการสำเร็จ", {
+      variant: "success",
+      autoHideDuration: 4000,
+    });
+    navigate("/house/room");
   };
   const handleClickCancel = () => {
     setIsCancelOpen(true);
