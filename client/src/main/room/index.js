@@ -10,33 +10,40 @@ import { useNavigate } from "react-router-dom";
 export default function RoomPage() {
   const [roomDatas, setRoomDatas] = useState([]);
   const [roomCount, setRoomCount] = useState();
+  const [searchData, setSearchData] = useState("");
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await Room.get();
-        setRoomDatas(data);
-        setRoomCount(data.length);
+        const data = await Room.get(searchData);
+        const formattedData = data.map((room) => ({
+          ...room,
+          roomStatus: room.roomStatus === 1 ? "ว่าง" : "เต็ม",
+        }));
+        console.log("formattedData", formattedData);
+        setRoomDatas(formattedData);
+        setRoomCount(formattedData.length);
       } catch (error) {
         console.error("Failed to fetch data", error);
       }
     };
 
     fetchData();
-  }, []);
-
+  }, [searchData]);
+  console.log("searchData", searchData);
   const handleClickCreate = () => {
-    console.log("Navigate to /house/room/create");
     navigate("/house/room/create");
   };
 
   const headers = [
     { title: "เลขห้อง", key: "roomId", fr: 1 },
     { title: "ประเภทห้อง", key: "roomType", fr: 2 },
+    { title: "เพศ", key: "roomGender", fr: 1 },
     { title: "ราคาห้อง", key: "roomPrice", fr: 2 },
-    { title: "จำนวนเตียง", key: "bedQuantity", fr: 2 },
+    { title: "จำนวนเตียง", key: "bedQuantity", fr: 1 },
+    { title: "สถานะห้อง", key: "roomStatus", fr: 1 },
   ];
 
   return (
@@ -60,7 +67,7 @@ export default function RoomPage() {
           </Button>
         </div>
       </div>
-      <SearchRoom />
+      <SearchRoom setSearchData={setSearchData} />
       <DataTable headers={headers} data={roomDatas} />
     </>
   );

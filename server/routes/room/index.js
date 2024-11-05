@@ -3,7 +3,19 @@ const router = express.Router();
 const db = require("../../db"); // สมมติว่าคุณเก็บการเชื่อมต่อ db ในไฟล์ db.js
 
 router.get("/", (req, res) => {
-  db.query("SELECT * FROM rooms", (err, result) => {
+  const roomId = req.query.roomId; // ใช้ req.query แทน req.body
+
+  let query = "SELECT * FROM rooms";
+  let queryParams = [];
+
+  if (roomId) {
+    query += " WHERE roomId LIKE ?";
+    queryParams.push(`%${roomId}%`); // ใช้ % เพื่อทำการค้นหาแบบ wildcard
+  }
+
+  query += " GROUP BY roomId ORDER BY roomId DESC";
+
+  db.query(query, queryParams, (err, result) => {
     if (err) {
       console.log(err);
       return res.status(500).send(err);

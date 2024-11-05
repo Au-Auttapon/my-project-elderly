@@ -61,7 +61,7 @@ export default function CreateRoom() {
   const handleConfirm = () => {
     Room.create(newRoomData);
     reset();
-    setIsConfirmOpen(false); // Close the dialog
+    setIsConfirmOpen(false);
     enqueueSnackbar("ทำรายการสำเร็จ", {
       variant: "success",
       autoHideDuration: 4000,
@@ -72,10 +72,9 @@ export default function CreateRoom() {
     setIsCancelOpen(true);
   };
   const handleCancel = () => {
-    // Handle the confirmation logic here (e.g., saving data)
     console.log("Cancelled");
-    reset(); // Reset form after submission
-    setIsCancelOpen(false); // Close the dialog
+    reset();
+    setIsCancelOpen(false);
     navigate("/house/room");
   };
 
@@ -106,6 +105,8 @@ export default function CreateRoom() {
                     size="small"
                     fullWidth
                     margin="normal"
+                    type="number"
+                    sx={{ ...stylesCSS.input }} // ลบ arrow
                   />
                 )}
               />
@@ -119,9 +120,9 @@ export default function CreateRoom() {
                   >
                     <InputLabel>ประเภทห้อง</InputLabel>
                     <Select
-                      {...field} // Spread the field properties here
+                      {...field}
                       label="ประเภทห้อง"
-                      onChange={(e) => field.onChange(e.target.value)} // Handle change manually
+                      onChange={(e) => field.onChange(e.target.value)}
                     >
                       <MenuItem value="">
                         <em>---</em>
