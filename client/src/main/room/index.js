@@ -1,41 +1,67 @@
-import React, { useEffect, useState } from 'react';
-import DataTable from '../../component/table';
-import Room from '../../api/room/Room';
-import SearchRoom from './search';
-import Badges from '../../component/badge';
+import React, { useEffect, useState } from "react";
+import DataTable from "../../component/table";
+import Room from "../../api/room/Room";
+import SearchRoom from "./search";
+import Badges from "../../component/badge";
+import { Button } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import { useNavigate } from "react-router-dom";
 
-export default function RoomPage () {
+export default function RoomPage() {
+  const [roomDatas, setRoomDatas] = useState([]);
+  const [roomCount, setRoomCount] = useState();
 
-  const [roomDatas, setRoomDatas]= useState([]);
-  const [roomCount, setRoomCount]= useState();
+  const navigate = useNavigate();
 
-  useEffect(()=>{
+  useEffect(() => {
     const fetchData = async () => {
       try {
-          const data = await Room.get(); // Await the response
-          setRoomDatas(data)
-          setRoomCount(data.length)
+        const data = await Room.get();
+        setRoomDatas(data);
+        setRoomCount(data.length);
       } catch (error) {
-          console.error("Failed to fetch data", error);
+        console.error("Failed to fetch data", error);
       }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleClickCreate = () => {
+    console.log("Navigate to /house/room/create");
+    navigate("/house/room/create");
   };
-  
-  fetchData();
-  },[])
-// console.log('roomDatas.length',roomDatas.length)
+
   const headers = [
-    { title: '#', key: 'roomId', fr: 1},
-    { title: 'ประเภทห้อง', key: 'roomType', fr: 2 },
-    { title: 'ราคาห้อง', key: 'roomPrice', fr: 2 },
-    { title: 'จำนวนเตียง', key: 'bedQuantity', fr: 2 },
+    { title: "เลขห้อง", key: "roomId", fr: 1 },
+    { title: "ประเภทห้อง", key: "roomType", fr: 2 },
+    { title: "ราคาห้อง", key: "roomPrice", fr: 2 },
+    { title: "จำนวนเตียง", key: "bedQuantity", fr: 2 },
   ];
 
   return (
-    <div style={{marginTop: '20px'}}>
-      <Badges title='ห้องพัก' count={roomCount}/>
-      <SearchRoom/>
+    <>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <Badges title="ห้องพัก" count={roomCount} />
+        <div>
+          <Button
+            startIcon={<AddIcon />}
+            variant="contained"
+            size="small"
+            onClick={handleClickCreate}
+          >
+            เพิ่มห้อง
+          </Button>
+        </div>
+      </div>
+      <SearchRoom />
       <DataTable headers={headers} data={roomDatas} />
-    </div>
+    </>
   );
-};
-
+}
