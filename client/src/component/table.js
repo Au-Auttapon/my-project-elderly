@@ -15,13 +15,19 @@ import {
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import RoomMenu from "../moreselect/room";
 import ElderlyMenu from "../moreselect/elderly";
+import MedicineMenu from "../moreselect/medicine";
 
 const DataTable = ({ headers, data = [], fontStyle, renderMenu }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [anchorEl, setAnchorEl] = useState(null);
   const [currentRow, setCurrentRow] = useState(null);
-  let totalFr = 0; // Declare and initialize
+
+  // คำนวณ totalFr โดยการรวมค่า fr จากทุกคอลัมน์
+  const totalFr = headers.reduce(
+    (total, header) => total + (header.fr || 1),
+    0
+  );
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -57,16 +63,18 @@ const DataTable = ({ headers, data = [], fontStyle, renderMenu }) => {
                 <TableCell
                   key={index}
                   style={{
+                    // ใช้การคำนวณสัดส่วนจาก fr และ totalFr
                     width: `${((header.fr || 1) / totalFr) * 100}%`,
                     ...fontStyle,
                     fontWeight: "bold",
                   }}
-                  align={header.align || "center"}
+                  align={"center"}
+                  // align={header.align || "center"}
                 >
                   {header.title}
                 </TableCell>
               ))}
-              <TableCell align="center"></TableCell>
+              <TableCell align="center" style={{ width: "90px" }}></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -81,7 +89,7 @@ const DataTable = ({ headers, data = [], fontStyle, renderMenu }) => {
                     {row[header.key]}
                   </TableCell>
                 ))}
-                <TableCell align="center">
+                <TableCell align="center" style={{ width: "90px" }}>
                   <IconButton
                     onClick={(event) => {
                       handleMenuClick(event, row);
@@ -110,7 +118,7 @@ const DataTable = ({ headers, data = [], fontStyle, renderMenu }) => {
         onClose={handleMenuClose}
         PaperProps={{
           style: {
-            width: "90px",
+            width: "100px",
           },
         }}
         anchorOrigin={{
@@ -136,6 +144,16 @@ DataTable.Room = (props) => {
     <DataTable
       {...props}
       renderMenu={(row, onClose) => <RoomMenu row={row} onClose={onClose} />}
+    />
+  );
+};
+DataTable.Medicine = (props) => {
+  return (
+    <DataTable
+      {...props}
+      renderMenu={(row, onClose) => (
+        <MedicineMenu row={row} onClose={onClose} />
+      )}
     />
   );
 };

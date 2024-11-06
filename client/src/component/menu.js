@@ -20,6 +20,9 @@ import { useEffect } from "react";
 import CreateRoom from "../main/room/create";
 import EditRoom from "../main/room/edit";
 import { SnackbarProvider } from "notistack";
+import MedicinePage from "../main/medic";
+import CreateMedicine from "../main/medic/create";
+import EditMedicine from "../main/medic/edit";
 
 const NAVIGATION = [
   {
@@ -86,7 +89,7 @@ const NAVIGATION = [
   { kind: "divider" },
   {
     segment: "logout",
-    title: <span style={{ color: "red" }}>ออกจากระบบ</span>,
+    title: "ออกจากระบบ",
     icon: <LogoutIcon />,
   },
   { kind: "divider" },
@@ -119,15 +122,27 @@ export default function TemplateMain(props) {
 
   useEffect(() => {
     const path = location.pathname;
-    const match = matchPath("/house/room/edit/:roomId", path);
+
+    // ตรวจสอบ path สำหรับ room
+    const roomMatch = matchPath("/house/room/edit/:roomId", path);
+
+    // ตรวจสอบ path สำหรับ medicine
+    const medicineMatch = matchPath("/medicine/edit/:medicId", path);
 
     if (path === "/house/room") {
       setCurrentComponent(<RoomPage />);
     } else if (path === "/house/room/create") {
       setCurrentComponent(<CreateRoom />);
-    } else if (match) {
-      const { roomId } = match.params; // ดึง roomId ออกมา
+    } else if (roomMatch) {
+      const { roomId } = roomMatch.params; // ดึง roomId ออกมา
       setCurrentComponent(<EditRoom roomId={roomId} />); // ส่ง roomId ให้กับ EditRoom
+    } else if (path === "/medicine") {
+      setCurrentComponent(<MedicinePage />);
+    } else if (path === "/medicine/create") {
+      setCurrentComponent(<CreateMedicine />);
+    } else if (medicineMatch) {
+      const { medicId } = medicineMatch.params; // ดึง medicId ออกมา
+      setCurrentComponent(<EditMedicine medicId={medicId} />); // ส่ง medicId ให้กับ EditMedicine
     } else if (path === "/profile/elderly") {
       setCurrentComponent(<ElderlyPage />);
     } else {
