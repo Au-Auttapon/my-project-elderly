@@ -4,10 +4,10 @@ import Axios from "axios";
 const url = "http://localhost:3001";
 
 const Room = {
-  get: async (roomId = null) => {
+  get: async (search = null) => {
     try {
-      const urlWithParams = roomId
-        ? `${url}/rooms?roomId=${roomId}`
+      const urlWithParams = search
+        ? `${url}/rooms?search=${search}`
         : `${url}/rooms`;
       const res = await Axios.get(urlWithParams);
       return res.data;
@@ -31,16 +31,7 @@ const Room = {
 
   create: async (body) => {
     try {
-      await Axios.post(`${url}/rooms/create`, {
-        roomId: body.roomId,
-        roomType: body.roomType,
-        roomGender: body.roomGender,
-        roomPrice: body.roomPrice,
-        bedQuantity: body.bedQuantity,
-        bedId: body.bedId,
-        bedStatus: body.bedStatus,
-        roomStatus: body.roomStatus,
-      });
+      await Axios.post(`${url}/rooms/create`, body);
     } catch (error) {
       console.error(error); // Log the error
       throw error; // Rethrow the error if you want to handle it later

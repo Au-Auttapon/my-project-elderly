@@ -3,14 +3,14 @@ const router = express.Router();
 const db = require("../../db");
 
 router.get("/", (req, res) => {
-  const roomId = req.query.roomId;
+  const search = req.query.search;
 
   let query = "SELECT * FROM rooms";
   let queryParams = [];
 
-  if (roomId) {
+  if (search) {
     query += " WHERE roomId LIKE ?";
-    queryParams.push(`%${roomId}%`);
+    queryParams.push(`%${search}%`);
   }
 
   query += " GROUP BY roomId ORDER BY roomId DESC";
@@ -43,16 +43,18 @@ router.get("/edit/:id", (req, res) => {
 });
 
 router.post("/create", (req, res) => {
-  const roomId = req.body.roomId;
-  const roomType = req.body.roomType;
-  const roomGender = req.body.roomGender;
-  const roomPrice = req.body.roomPrice;
-  const bedQuantity = req.body.bedQuantity;
-  let bedId = req.body.bedId;
-  const bedStatus = req.body.bedStatus;
-  const roomStatus = req.body.roomStatus;
+  const {
+    roomId,
+    roomType,
+    roomGender,
+    roomPrice,
+    bedQuantity,
+    bedId,
+    bedStatus,
+    roomStatus,
+  } = req.body;
 
-  const CreateRoom = () => {
+  const CreateRoom = (bedId) => {
     if (bedId <= bedQuantity) {
       db.query(
         "INSERT INTO rooms (roomId, roomType, roomGender, roomPrice, bedQuantity, bedId, bedStatus, roomStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
@@ -71,8 +73,8 @@ router.post("/create", (req, res) => {
             console.log(err);
             return res.status(500).send("Error inserting room");
           } else {
-            bedId++;
-            CreateRoom();
+            // เพิ่ม bedId ก่อนทำการเรียก CreateRoom ใหม่
+            CreateRoom(bedId + 1); // ส่งค่า bedId ที่เพิ่มขึ้น
           }
         }
       );
@@ -81,7 +83,7 @@ router.post("/create", (req, res) => {
     }
   };
 
-  CreateRoom();
+  CreateRoom(bedId); // เริ่มการสร้างห้องด้วย bedId ที่รับมาจาก body
 });
 
 module.exports = router;
